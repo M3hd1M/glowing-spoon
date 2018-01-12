@@ -13,3 +13,6 @@ You can use the following optionnal argument :
 - **outputFile** : If you want the JSON in a file (default outputs to the console)
 
 Hope I will win and get this iPhone X :iphone:
+
+### Author 
+**Mehdi M** (https://twitter.com/MehdiMasrour)

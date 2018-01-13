@@ -105,7 +105,7 @@ function browse(){
                 casper.exit();
             } else {
                 // Our last item isn't empty so it should contain a Transaction ID :
-                var lastTransaction = jsonArray[jsonArray.length-1]['Transaction'].match(/[0-9]+/g)[0];
+                var lastTransaction = jsonArray[jsonArray.length-1]['Transaction'];
                 // We open the next page "manually" because the "Next" button is fake
                 casper.thenOpen(baseURL+'?start='+lastTransaction);
                 // When the page is loaded we repeat the browse process
@@ -125,13 +125,26 @@ function evaluateTable(){
     // If we only have 1 row it means we only have the header and we are done
     if (rows.length == 1) return null;
     // We get the headers just in case titles (or their order) are changed accross pages...
-    var header = rows[0];
+    var headerCells = rows[0].cells;
     // Mapping all the rows except first one (headers)
     return Array.prototype.map.call(Array.prototype.slice.call(rows,1), function(row) {
         var tmpJSON = {};
-        tmpJSON[header.cells[0].innerHTML] = row.cells[0].innerHTML;
-        tmpJSON[header.cells[1].innerHTML] = row.cells[1].innerHTML;
-        tmpJSON[header.cells[2].innerHTML] = row.cells[2].innerHTML;
+        // Now we fill the Account and Transaction
+        for(i=0; i<headerCells.length; i++){
+            if (headerCells[i].textContent == "Amount"){
+                var amount = row.cells[i].textContent;
+                // We capture both sides around the amount because some currencies are on the left, some on the right
+                var matchArray = amount.match(/([^0-9]*)(\d+)([^0-9]*)/);
+                tmpJSON["Currency"] = (matchArray[1] != "") ? matchArray[1] : matchArray[3];
+                // The amount is always the third element of the match and we put it in float
+                tmpJSON[headerCells[i].textContent] = parseFloat(matchArray[2]);
+            } else if (headerCells[i].textContent == "Transaction"){
+                // We extract the transaction number and put it in int
+                tmpJSON[headerCells[i].textContent] = parseInt(row.cells[i].textContent.match(/\d+/g)[0]);
+            } else {
+                tmpJSON[headerCells[i].textContent] = row.cells[i].textContent;
+            }
+        }
         return tmpJSON;
     });
 }

@@ -19,6 +19,7 @@ var casper = require('casper').create();
 
 // URL to scrap
 var baseURL = 'https://web.bankin.com/challenge/index.html';
+if (casper.cli.has('url')) baseURL = casper.cli.get('url');
 
 // The page used for the challenge can take a really long time to load...
 var maxTimeout = 60000;

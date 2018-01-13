@@ -23,7 +23,7 @@ The script will scrape the url argument and print (or save) a json with the foll
 
 
 
-Hope I will win and get this iPhone X :iphone:
+I Hope you will like my work and get this iPhone X :iphone:
 
 ### Author 
 **Mehdi M** (https://twitter.com/MehdiMasrour)

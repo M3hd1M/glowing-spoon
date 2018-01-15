@@ -6,7 +6,7 @@
  *
  * Date : 2018-01-13
  *
- * Usage : casperjs mmbcews.js [--outputFile=result.json]
+ * Usage : casperjs mmbcews.js [--outputFile=result.json] [--url=https://web.bankin.com/challenge/index.html]
  */
 
 

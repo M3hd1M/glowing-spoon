@@ -6,7 +6,7 @@
  *
  * Date : 2018-01-13
  *
- * Usage : casperjs mmbcews.js [--outputFile=result.json] [--url=https://web.bankin.com/challenge/index.html] [--start=0]
+ * Usage : casperjs mmbcews.js [--outputFile=result.json] [--url=https://web.bankin.com/challenge/index.html] [--start=0] [--follow]
  *
  * Github Repo : https://github.com/M3hd1M/glowing-spoon
  *
@@ -35,11 +35,15 @@ if (casper.cli.has('outputFile')) outputFile = casper.cli.get('outputFile');
 var jsonArray = [];
 
 // If they want to start at a specific transaction
-var lastTransaction = 0;
-if (casper.cli.has('start') && !isNaN(casper.cli.get('start'))) lastTransaction = casper.cli.get('start');
+var start = 0;
+if (casper.cli.has('start') && !isNaN(casper.cli.get('start'))) start = casper.cli.get('start');
 
 // Easy config if the GET parameter is changed
 var pageParameter = '?start=';
+
+// If they really want to follow the fake "Next" link...
+var follow = false;
+if (casper.cli.has('follow')) follow = true;
 
 
 /**
@@ -100,29 +104,23 @@ function browse(){
                 // If the last json we added to our array is empty we didn't find any line in our last evaluation so we are done
                 // Removing the last empy item
                 jsonArray.splice(-1);
-                
-                var json = JSON.stringify(jsonArray);
-                // If not mentionned, we output json to the console
-                if (outputFile == null){
-                    casper.echo(json);
-                } else {
-                    try{
-                        // Else we try to write the json to the provided outputFile
-                        var fs = require('fs');
-                        fs.write(outputFile, json, 'w');
-                    } catch(e){
-                        // If we have any error trying to write the json to the file 
-                        // we print the error and the json
-                        casper.echo(e,'ERROR');
-                        casper.echo(json);
-                    }
-                }
                 casper.exit();
             } else {
-                // Our last item isn't empty so it should contain a Transaction ID :
-                lastTransaction = jsonArray[jsonArray.length-1]['Transaction'];
-                // We open the next page "manually" because the "Next" button is fake
-                casper.thenOpen(baseURL+pageParameter+lastTransaction);
+                if (follow){
+                    // They really want to follow that fake "Next" text...
+                    var nextLink = casper.getElementAttribute(nextSelector,"href");
+                    // So we check if we are really going to change the page...
+                    if (baseURL+nextLink == casper.getCurrentUrl()){
+                        casper.exit();
+                    } else {
+                        casper.click(nextSelector);
+                    }    
+                } else {
+                    // Our last item isn't empty so it should contain a Transaction ID :
+                    var lastTransaction = jsonArray[jsonArray.length-1]['Transaction'];
+                    // We open the next page "manually" because the "Next" button is fake
+                    casper.thenOpen(baseURL+pageParameter+lastTransaction);
+                }
                 // When the page is loaded we repeat the browse process
                 casper.then(browse);
             }
@@ -174,8 +172,28 @@ casper.on('error', function(msg, backtrace){
     casper.echo("Something went wrong : "+msg, "ERROR"); 
 });
 
+// On exit, we print or write the json
+casper.on('exit', function(status){
+    var json = JSON.stringify(jsonArray);
+    // If not mentionned, we output json to the console
+    if (outputFile == null){
+        casper.echo(json);
+    } else {
+        try{
+            // Else we try to write the json to the provided outputFile
+            var fs = require('fs');
+            fs.write(outputFile, json, 'w');
+        } catch(e){
+            // If we have any error trying to write the json to the file 
+            // we print the error and the json
+            casper.echo(e,'ERROR');
+            casper.echo(json);
+        }
+    }
+});
+
 // Starts Casper, then opens the provided url, callback to "browse" function
-casper.start(baseURL+pageParameter+lastTransaction, browse);
+casper.start(baseURL+pageParameter+start, browse);
 
 // Casper run
 casper.run();

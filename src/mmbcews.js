@@ -6,7 +6,10 @@
  *
  * Date : 2018-01-13
  *
- * Usage : casperjs mmbcews.js [--outputFile=result.json] [--url=https://web.bankin.com/challenge/index.html]
+ * Usage : casperjs mmbcews.js [--outputFile=result.json] [--url=https://web.bankin.com/challenge/index.html] [--start=0]
+ *
+ * Github Repo : https://github.com/M3hd1M/glowing-spoon
+ *
  */
 
 
@@ -31,6 +34,13 @@ if (casper.cli.has('outputFile')) outputFile = casper.cli.get('outputFile');
 // Global array variable for our transactions
 var jsonArray = [];
 
+// If they want to start at a specific transaction
+var lastTransaction = 0;
+if (casper.cli.has('start') && !isNaN(casper.cli.get('start'))) lastTransaction = casper.cli.get('start');
+
+// Easy config if the GET parameter is changed
+var pageParameter = '?start=';
+
 
 /**
  * XPATH SELECTORS
@@ -51,17 +61,22 @@ contentReadySelector = {
     type: 'xpath',
     path: '//iframe[@id="fm"]|//div[@id="dvTable"]/table'
 };
+// When transactions are in table mode we have at least one line (tr)
+tableSelector = {
+    type: 'xpath',
+    path: '//div[@id="dvTable"]/table//tr'
+};
 
 
 /**
  * MAIN FUNCTION
- * Browses through transactions pages, evaluates html data and echoes or writes result JSON
+ * Browses through transactions pages, evaluates html data and prints or writes result JSON
  */
 function browse(){
     // We wait until the "Next" text is available.
     casper.waitForSelector(nextSelector, function(){
         // If "Something went wrong" we have the generate button and have to click it 
-        if (casper.visible(btnSelector)) casper.click(btnSelector);
+        if (casper.exists(btnSelector)) casper.click(btnSelector);
     });
    
     casper.then(function(){
@@ -70,10 +85,9 @@ function browse(){
     });
    
     casper.then(function(){
-        // The table in the "div#dvTable" is always here but not always used
+        // The table is always here but not always used
         // If Transactions are in "table mode" we have at least one line
-        // XPath selector not working here !
-        if (casper.exists("div#dvTable table tr")){
+        if (casper.exists(tableSelector)){
             jsonArray = jsonArray.concat(casper.evaluate(evaluateTable));
         } else {
             // Else Transactions are in "iframe mode" so we change the current frame
@@ -106,9 +120,9 @@ function browse(){
                 casper.exit();
             } else {
                 // Our last item isn't empty so it should contain a Transaction ID :
-                var lastTransaction = jsonArray[jsonArray.length-1]['Transaction'];
+                lastTransaction = jsonArray[jsonArray.length-1]['Transaction'];
                 // We open the next page "manually" because the "Next" button is fake
-                casper.thenOpen(baseURL+'?start='+lastTransaction);
+                casper.thenOpen(baseURL+pageParameter+lastTransaction);
                 // When the page is loaded we repeat the browse process
                 casper.then(browse);
             }
@@ -150,8 +164,18 @@ function evaluateTable(){
     });
 }
 
+// waitFor timeout "handling"
+casper.on('waitFor.timeout', function(timeout, details){
+    casper.echo("Selector "+details.selector.path+" didn't show in time ("+timeout+"ms)...", "ERROR");
+});
+
+// Error "handling"
+casper.on('error', function(msg, backtrace){
+    casper.echo("Something went wrong : "+msg, "ERROR"); 
+});
+
 // Starts Casper, then opens the provided url, callback to "browse" function
-casper.start(baseURL, browse);
+casper.start(baseURL+pageParameter+lastTransaction, browse);
 
 // Casper run
 casper.run();

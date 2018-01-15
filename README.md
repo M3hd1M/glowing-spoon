@@ -28,7 +28,9 @@ The script will scrape the url argument and print (or save) a json with the foll
 We are asked to retrieve ***EVERY available*** transaction. 
 
 - Does this mean we have to follow the fake "Next" button even if it's skipping some (every :satisfied:) transactions ? 
-- Does this mean we have to retrieve transactions with a negative ID which are not directly available ?
+- Does this mean we have to retrieve transactions with a negative ID which are not directly available and infinite because of the generation script ? Example below (and you can put **any** negative value in the url...)
+
+![Example of negative transactions](https://i.imgur.com/yx5648A.png)
 
 Since I'm a helpful guy, my script has arguments that will let you choose what you want... If you want negative transactions, just pass a negative value to the *start* argument... If you want to follow the fake "Next" link instead of using the transaction number, use the *follow* argument !
 

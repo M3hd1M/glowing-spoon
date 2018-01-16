@@ -1,0 +1,11 @@
+Usage: casperjs mmbcews.js [arguments]
+
+Arguments:
+
+--outputFile=fileName   Saves the result json to fileName
+--url=url               Sets the url to scrap
+--start=0               Sets the first Transaction ID to scrap
+--follow                Uses the "Next" link on the page to scrap
+--groupByAccount        Groups the result json by Account type (Checking, Savings)
+
+Read the docs https://github.com/M3hd1M/glowing-spoon

@@ -6,22 +6,63 @@ It **only** uses [CasperJS](https://github.com/casperjs/casperjs) + [PhantomJS](
 
 To run the script (assuming you already have casperjs+phantomjs installed) :
 
-`casperjs mmbcews.js [--url=https://web.bankin.com/challenge/index.html] [--outputFile=result.json] [--start=0] [--follow]`
+`casperjs mmbcews.js [--url=https://web.bankin.com/challenge/index.html] [--outputFile=result.json] [--start=0] [--follow] [--groupByAccount]`
 
 You can use the following optionnal arguments :
 
 - **url** : URL to scrape (default https://web.bankin.com/challenge/index.html, target URL should have the same behaviour/layout of course)
 - **outputFile** : If you want the JSON in a file (default outputs to the console)
-- **start** : If you want to begin the process at a specific transaction (defaults to 0)
-- **follow** : If you **REALLY** want to use the fake "Next" link...
+- **start** : If you want to begin the process at a specific transaction (default 0)
+- **follow** : If you **REALLY** want to use the fake "Next" link... (default not following)
+- **groupByAccount** : If you want a nice JSON with transactions grouped by Account type  (default not grouped)
 
 
 The script will scrape the url argument and print (or save) a json with the following format :
 ```
-[{"Account":"Checking","Amount":73,"Currency":"€","Transaction":1},
-...
-{"Account":"Checking","Amount":54,"Currency":"€","Transaction":2}]
+[{
+		"Account": "Checking",
+		"Amount": 73,
+		"Currency": "€",
+		"Id": 1
+	},
+	{
+		"Account": "Checking",
+		"Amount": 54,
+		"Currency": "€",
+		"Id": 2
+	}
+]
 ```
+
+or the following format if you use the **--groupByAccount** argument :
+```
+{
+	"Accounts": [{
+		"Type": "Checking",
+		"Transactions": [{
+			"Amount": 73,
+			"Currency": "€",
+			"Id": 1
+		}, {
+			"Amount": 54,
+			"Currency": "€",
+			"Id": 2
+		}]
+	}, {
+		"Type": "Savings",
+		"Transactions": [{
+			"Amount": 122,
+			"Currency": "€",
+			"Id": 450
+		}, {
+			"Amount": 37,
+			"Currency": "€",
+			"Id": 451
+		}]
+	}]
+}
+```
+
 
 ## Note
 

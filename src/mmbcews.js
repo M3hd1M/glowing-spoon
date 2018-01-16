@@ -6,7 +6,7 @@
  *
  * Date : 2018-01-13
  *
- * Usage : casperjs mmbcews.js [--outputFile=result.json] [--url=https://web.bankin.com/challenge/index.html] [--start=0] [--follow]
+ * Usage : casperjs mmbcews.js [--outputFile=result.json] [--url=https://web.bankin.com/challenge/index.html] [--start=0] [--follow] [--groupByAccount]
  *
  * Github Repo : https://github.com/M3hd1M/glowing-spoon
  *
@@ -45,6 +45,12 @@ var pageParameter = '?start=';
 var follow = false;
 if (casper.cli.has('follow')) follow = true;
 
+// If they want a really nice JSON grouped by Account
+var groupByAccount = false;
+if (casper.cli.has('groupByAccount')) groupByAccount = true;
+
+// Index of the current group key, used in the group function
+var currentIdx = -1;
 
 /**
  * XPATH SELECTORS
@@ -117,7 +123,7 @@ function browse(){
                     }    
                 } else {
                     // Our last item isn't empty so it should contain a Transaction ID :
-                    var lastTransaction = jsonArray[jsonArray.length-1]['Transaction'];
+                    var lastTransaction = jsonArray[jsonArray.length-1]['Id'];
                     // We open the next page "manually" because the "Next" button is fake
                     casper.thenOpen(baseURL+pageParameter+lastTransaction);
                 }
@@ -153,7 +159,7 @@ function evaluateTable(){
                 tmpJSON[headerCells[i].textContent] = parseFloat(matchArray[2]);
             } else if (headerCells[i].textContent == "Transaction"){
                 // We extract the transaction number and put it in int
-                tmpJSON[headerCells[i].textContent] = parseInt(row.cells[i].textContent.match(/\d+/g)[0]);
+                tmpJSON["Id"] = parseInt(row.cells[i].textContent.match(/\d+/g)[0]);
             } else {
                 tmpJSON[headerCells[i].textContent] = row.cells[i].textContent;
             }
@@ -161,6 +167,33 @@ function evaluateTable(){
         return tmpJSON;
     });
 }
+
+/**
+ * GROUP FUNCTION
+ * Allows to group an array using one of its properties (Account for example...)
+ */
+function groupBy(array, key) {
+    return array.reduce(function(accumulator, val) {
+        // Grouping key will be plural
+        var plural = key+'s';
+        // Initialize the array
+        accumulator[plural] = accumulator[plural] || [];
+        // If the current account type does not exist yet
+        if (accumulator[plural].filter(function(e) { return e["Type"] === val[key]; }).length < 1){ 
+            var tmp = {"Type": val[key], "Transactions": []};
+            currentIdx = (accumulator[plural].push(tmp))-1;
+        }
+        // Temp object containing the current transaction
+        var tmpObj = {};
+        for (var k in val){
+            // Don't need to add the grouping key itself
+            if (k != key) tmpObj[k] = val[k];
+        }
+        accumulator[plural][currentIdx]["Transactions"].push(tmpObj);     
+        return accumulator;
+  }, {});
+};
+
 
 // waitFor timeout "handling"
 casper.on('waitFor.timeout', function(timeout, details){
@@ -174,6 +207,7 @@ casper.on('error', function(msg, backtrace){
 
 // On exit, we print or write the json
 casper.on('exit', function(status){
+    if (groupByAccount) jsonArray = groupBy(jsonArray, "Account");
     var json = JSON.stringify(jsonArray);
     // If not mentionned, we output json to the console
     if (outputFile == null){

@@ -3,6 +3,7 @@
 This script is an answer to Bankin's Engineering Challenge (https://blog.bankin.com/challenge-engineering-web-scrapping-dc5839543117).
 
 It **only** uses [CasperJS](https://github.com/casperjs/casperjs) + [PhantomJS](https://github.com/ariya/phantomjs/) :ghost:.
+(Tested with casperjs-1.1.0 + phantomjs-2.1.1)
 
 To run the script (assuming you already have casperjs+phantomjs installed) :
 

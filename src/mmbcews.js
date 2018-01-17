@@ -152,9 +152,9 @@ function evaluateTable(){
         for(i=0; i<headerCells.length; i++){
             if (headerCells[i].textContent == "Amount"){
                 var amount = row.cells[i].textContent;
-                // We capture both sides around the amount because some currencies are on the left, some on the right
-                var matchArray = amount.match(/([^0-9]*)(\d+)([^0-9]*)/);
-                tmpJSON["Currency"] = (matchArray[1] != "") ? matchArray[1] : matchArray[3];
+                // We capture everything that is not a number to get the currency
+                var matchArray = amount.match(/([^0-9]+)/);
+                tmpJSON["Currency"] = matchArray[1];
                 // The amount is always the third element of the match and we put it in float
                 tmpJSON[headerCells[i].textContent] = parseFloat(matchArray[2]);
             } else if (headerCells[i].textContent == "Transaction"){

@@ -99,38 +99,15 @@ function browse(){
         // If Transactions are in "table mode" we have at least one line
         if (casper.exists(tableSelector)){
             jsonArray = jsonArray.concat(casper.evaluate(evaluateTable));
+            casper.then(check);
         } else {
             // Else Transactions are in "iframe mode" so we change the current frame
             casper.withFrame(0, function(){
                 jsonArray = jsonArray.concat(casper.evaluate(evaluateTable));
+                // withFrame being async, we needed to have a callback to check the evaluation
+                casper.then(check);
             });
         }
-        casper.then(function(){
-            if (jsonArray[jsonArray.length-1] == ""){
-                // If the last json we added to our array is empty we didn't find any line in our last evaluation so we are done
-                // Removing the last empy item
-                jsonArray.splice(-1);
-                casper.exit();
-            } else {
-                if (follow){
-                    // They really want to follow that fake "Next" text...
-                    var nextLink = casper.getElementAttribute(nextSelector,"href");
-                    // So we check if we are really going to change the page...
-                    if (baseURL+nextLink == casper.getCurrentUrl()){
-                        casper.exit();
-                    } else {
-                        casper.click(nextSelector);
-                    }    
-                } else {
-                    // Our last item isn't empty so it should contain a Transaction ID :
-                    var lastTransaction = jsonArray[jsonArray.length-1]['Id'];
-                    // We open the next page "manually" because the "Next" button is fake
-                    casper.thenOpen(baseURL+pageParameter+lastTransaction);
-                }
-                // When the page is loaded we repeat the browse process
-                casper.then(browse);
-            }
-        });
     });
 }
 
@@ -152,9 +129,9 @@ function evaluateTable(){
         for(i=0; i<headerCells.length; i++){
             if (headerCells[i].textContent == "Amount"){
                 var amount = row.cells[i].textContent;
-                // We capture everything that is not a number to get the currency
-                var matchArray = amount.match(/([^0-9]+)/);
-                tmpJSON["Currency"] = matchArray[1];
+                // We capture both sides around the amount because some currencies are on the left, some on the right
+                var matchArray = amount.match(/([^0-9]*)(\d+)([^0-9]*)/);
+                tmpJSON["Currency"] = (matchArray[1] != "") ? matchArray[1] : matchArray[3];
                 // The amount is always the third element of the match and we put it in float
                 tmpJSON[headerCells[i].textContent] = parseFloat(matchArray[2]);
             } else if (headerCells[i].textContent == "Transaction"){
@@ -167,6 +144,44 @@ function evaluateTable(){
         return tmpJSON;
     });
 }
+
+
+/**
+ * CHECK FUNCTION
+ * After a page has been browsed and parsed we check
+ * if we are done or need to browse the next page
+ * (function added because of async withFrame)
+ */
+function check(){
+    if (jsonArray[jsonArray.length-1] == ""){
+        // If the last json we added to our array is empty we didn't find any line in our last evaluation so we are done
+        // Removing the last empy item
+        jsonArray.splice(-1);
+        casper.exit();
+    } else {
+        if (follow){
+            // They really want to follow that fake "Next" text...
+            var nextLink = casper.getElementAttribute(nextSelector,"href");
+            // So we check if we are really going to change the page...
+            if (baseURL+nextLink == casper.getCurrentUrl()){
+                casper.exit();
+            } else {
+                casper.click(nextSelector);
+            }    
+        } else {
+            // Our last item isn't empty so it should contain a Transaction ID :
+            var lastTransaction = jsonArray[jsonArray.length-1]['Id'];
+            // We open the next page "manually" because the "Next" button is fake
+            casper.thenOpen(baseURL+pageParameter+lastTransaction);
+        }
+        // When the page is loaded we repeat the browse process
+        casper.then(browse);
+    }
+}
+
+
+
+
 
 /**
  * GROUP FUNCTION

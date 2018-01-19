@@ -77,6 +77,18 @@ We are asked to retrieve ***EVERY available*** transaction.
 Since I'm a helpful guy, my script has arguments that will let you choose what you want... If you want negative transactions, just pass a negative value to the *start* argument... If you want to follow the fake "Next" link instead of using the transaction number, use the *follow* argument !
 
 
+## Note #2
+
+Parallelism...
+
+You may ask why I didn't implement any parallelism/thread mechanic on the script when half the notation is based on speed ?
+
+The answer is simple : Quality > Speed
+
+More to come later about this... (too many clones :eyes:)
+
+---
+
 I Hope you will like my work and get this iPhone X :iphone:
 
 ### Author 

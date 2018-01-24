@@ -31,8 +31,8 @@ jsonResult = []
 casperEx = "casperjs"
 scriptEx = "mmbcews.js"
 outputFile = None
-threads = 0
-steps = 0
+threads = 10
+steps = 50
 rounds = 0
 found = False
 # Concurrency

@@ -7,7 +7,7 @@ It **only** uses [CasperJS](https://github.com/casperjs/casperjs) + [PhantomJS](
 
 To run the script (assuming you already have casperjs+phantomjs installed) :
 
-`casperjs mmbcews.js [--url=https://web.bankin.com/challenge/index.html] [--outputFile=result.json] [--start=0] [--follow] [--groupByAccount]`
+`casperjs mmbcews.js [--url=https://web.bankin.com/challenge/index.html] [--outputFile=result.json] [--start=0] [--follow] [--groupByAccount] [--unit]`
 
 You can use the following optionnal arguments :
 
@@ -16,6 +16,7 @@ You can use the following optionnal arguments :
 - **start** : If you want to begin the process at a specific transaction (default 0)
 - **follow** : If you **REALLY** want to use the fake "Next" link... (default not following)
 - **groupByAccount** : If you want a nice JSON with transactions grouped by Account type  (default not grouped)
+- **unit** : If you only want to scrap one page, not following, not browsing
 
 
 The script will scrape the url argument and print (or save) a json with the following format :

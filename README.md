@@ -16,7 +16,7 @@ You can use the following optionnal arguments :
 - **start** : If you want to begin the process at a specific transaction (default 0)
 - **follow** : If you **REALLY** want to use the fake "Next" link... (default not following)
 - **groupByAccount** : If you want a nice JSON with transactions grouped by Account type  (default not grouped)
-- **unit** : If you only want to scrap one page, not following, not browsing
+- **unit** : If you only want to scrap one page, not following, not browsing (mainly used by the [python wrapper](https://github.com/M3hd1M/glowing-spoon/blob/master/README.md#note-2))
 
 
 The script will scrape the url argument and print (or save) a json with the following format :
@@ -101,11 +101,11 @@ Run it this way (tested with Python 2.7.9):
 
 `python wrapper.py -t10 -s50 -ccasperjs -xmmbcews.js [-oresult.json]`
 
-**-tX** : Number of threads to run (example 10)
-**-sY** : Number of transaction by page (example 50)
-**-cCASPERJS** : Full path to casperjs executable (casperjs if it's in your path)
-**-xSCRIPT** : Full path to my awesome script (mmbcews.js)
-**-oOUTPUTFILE** : If you want the result json written in a file
+- **-tX** : Number of threads to run (example 10)
+- **-sY** : Number of transaction by page (example 50)
+- **-cCASPERJS** : Full path to casperjs executable (casperjs if it's in your path)
+- **-xSCRIPT** : Full path to my awesome script (mmbcews.js)
+- **-oOUTPUTFILE** : If you want the result json written in a file
 
 ---
 

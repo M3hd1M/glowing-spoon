@@ -64,7 +64,7 @@ or the following format if you use the **--groupByAccount** argument :
 	}]
 }
 ```
-Please check ![Note #2](https://github.com/M3hd1M/glowing-spoon/blob/master/README.md#note-2) if you want to run multiple threads of my script.
+Please check [Note #2](https://github.com/M3hd1M/glowing-spoon/blob/master/README.md#note-2) if you want to run multiple threads of my script.
 
 ## Note
 

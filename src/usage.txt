@@ -1,3 +1,5 @@
+1] Main casperJS Script :
+
 Usage: casperjs mmbcews.js [arguments]
 
 Arguments:
@@ -7,5 +9,22 @@ Arguments:
 --start=0               Sets the first Transaction ID to scrap
 --follow                Uses the "Next" link on the page to scrap
 --groupByAccount        Groups the result json by Account type (Checking, Savings)
+
+
+
+2] Python wrapper (multi threading):
+
+Usage : python wrapper.py -t10 -s50 -ccasperjs -xmmbcews.js [-oresult.json]
+
+Arguments :
+
+-t10            Number of threads 
+-s50            Number of transaction by page
+-ccasperjs      Full path to casperjs executable
+-xmmbcews.js    Full path to my awesome script
+-oresult.json   If you want the result json written in a file
+
+
+
 
 Read the docs https://github.com/M3hd1M/glowing-spoon

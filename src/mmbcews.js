@@ -6,7 +6,7 @@
  *
  * Date : 2018-01-13
  *
- * Usage : casperjs mmbcews.js [--outputFile=result.json] [--url=https://web.bankin.com/challenge/index.html] [--start=0] [--follow] [--groupByAccount]
+ * Usage : casperjs mmbcews.js [--outputFile=result.json] [--url=https://web.bankin.com/challenge/index.html] [--start=0] [--follow] [--groupByAccount] [--unit]
  *
  * Github Repo : https://github.com/M3hd1M/glowing-spoon
  *
@@ -48,6 +48,10 @@ if (casper.cli.has('follow')) follow = true;
 // If they want a really nice JSON grouped by Account
 var groupByAccount = false;
 if (casper.cli.has('groupByAccount')) groupByAccount = true;
+
+// If we are running in unit mode (from a threaded script)
+var unit = false;
+if (casper.cli.has('unit')) unit = true;
 
 // Index of the current group key, used in the group function
 var currentIdx = -1;
@@ -153,11 +157,18 @@ function evaluateTable(){
  * (function added because of async withFrame)
  */
 function check(){
-    if (jsonArray[jsonArray.length-1] == ""){
+    if (jsonArray[jsonArray.length-1] == "" || unit){
         // If the last json we added to our array is empty we didn't find any line in our last evaluation so we are done
         // Removing the last empy item
-        jsonArray.splice(-1);
-        casper.exit();
+        if (jsonArray[jsonArray.length-1] == ""){
+            jsonArray.splice(-1);
+            // Exit code 99 used by the threaded python wrapper
+            // to know we reached the end
+            casper.exit(99);
+        } else {
+            // Else we are just in unit mode and not finished yet
+            casper.exit();
+        }
     } else {
         if (follow){
             // They really want to follow that fake "Next" text...

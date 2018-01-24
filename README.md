@@ -64,7 +64,7 @@ or the following format if you use the **--groupByAccount** argument :
 	}]
 }
 ```
-
+Please check Note #2 if you want to run multiple threads of my script.
 
 ## Note
 
@@ -86,7 +86,26 @@ You may ask why I didn't implement any parallelism/thread mechanic on the script
 
 The answer is simple : Quality > Speed
 
-More to come later about this... (too many clones :eyes:)
+Some people may think that multiple threads is a good idea to get results faster but in our case, the start argument in the URL is a transaction number, not a page number. How can you guess which is the first un-retrieved transaction if you haven't parsed the current page yet :question: Also, if you want to use multiple threads, this means you know how many transactions each page is going to give you (and you hardcode the famous 50 :sweat_smile:).
+
+Another thing is that this example is pretty simple because we can imagine we are browsing transactions from a single account and every transaction id follow each other. What if they didn't and you browse blindly each page only incrementing by 50 the start argument ? Well you will have a lot of duplicates and a lot of pages browsed for nothing !
+
+That's why at first I didn't want to implement any parallelism mechanic.
+Anyway, as I am really a nice guy (and I really want to have R. calling me again but on my brand new iPhone X this time...) I will again give you the choice to use threads if you really want to.
+
+You will find in the src folder a python script `wrapper.py`
+
+This script is only a wrapper to run casperjs with the number of threads you want !
+
+Run it this way :
+
+`python wrapper.py -t10 -s50 -ccasperjs -xmmbcews.js [-oresult.json]`
+
+**-tX** : Number of threads to run (example 10)
+**-sY** : Number of transaction by page (example 50)
+**-cCASPERJS** : Full path to casperjs executable (casperjs if it's in your path)
+**-xSCRIPT** : Full path to my awesome script (mmbcews.js)
+**-oOUTPUTFILE** : If you want the result json written in a file
 
 ---
 

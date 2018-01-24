@@ -97,7 +97,7 @@ You will find in the src folder a python script `wrapper.py`
 
 This script is only a wrapper to run casperjs with the number of threads you want !
 
-Run it this way :
+Run it this way (tested with Python 2.7.9):
 
 `python wrapper.py -t10 -s50 -ccasperjs -xmmbcews.js [-oresult.json]`
 

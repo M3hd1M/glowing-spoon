@@ -16,7 +16,7 @@ You can use the following optionnal arguments :
 - **start** : If you want to begin the process at a specific transaction (default 0)
 - **follow** : If you **REALLY** want to use the fake "Next" link... (default not following)
 - **groupByAccount** : If you want a nice JSON with transactions grouped by Account type  (default not grouped)
-- **unit** : If you only want to scrap one page, not following, not browsing (mainly used by the [python wrapper](https://github.com/M3hd1M/glowing-spoon/blob/master/README.md#note-2))
+- **unit** : If you only want to scrap one page, not following, not browsing (mainly used by the [python wrapper](https://github.com/M3hd1M/glowing-spoon#note-2))
 
 
 The script will scrape the url argument and print (or save) a json with the following format :
@@ -64,7 +64,7 @@ or the following format if you use the **--groupByAccount** argument :
 	}]
 }
 ```
-Please check [Note #2](https://github.com/M3hd1M/glowing-spoon/blob/master/README.md#note-2) if you want to run multiple threads of my script.
+Please check [Note #2](https://github.com/M3hd1M/glowing-spoon#note-2) if you want to run multiple threads of my script.
 
 ## Note
 

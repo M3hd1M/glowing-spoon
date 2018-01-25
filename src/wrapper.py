@@ -99,8 +99,13 @@ while not found:
 
 # Since we are in parallel, we need to sort the transactions by Id
 # Ensure ascii is false to get the Euro symbol
+jsonString = json.dumps(sorted(jsonResult, key=lambda j: j['Id']), ensure_ascii=False).encode("utf-8")
 if outputFile:
-    with open(outputFile,'w') as f:
-        f.write(json.dumps(sorted(jsonResult, key=lambda j: j['Id']), ensure_ascii=False).encode("utf-8"))
+    try:
+        with open(outputFile,'w') as f:
+            f.write(jsonString)
+    except:
+        print(traceback.format_exc())
+        print(jsonString)
 else:
-    print(json.dumps(sorted(jsonResult, key=lambda j: j['Id']), ensure_ascii=False))
+    print(jsonString)
